@@ -1,25 +1,29 @@
-[build-system]
-requires = ["maturin>=1.0,<2.0"]
-build-backend = "maturin"
+    [tool.poetry]
+    name = "qynauth"
+    version = "0.1.0"
+    description = "Quantum authentication (Rust/Python hybrid)"
+    authors = ["Minkalla Technologies <info@minkalla.org>"] # Updated author to reflect project
+    readme = "README.md"
 
-[project]
-name = "qynauth"
-version = "0.1.0"
-authors = [
-  { name = "Minkalla Technologies", email = "contact@minkalla.com" },
-]
-description = "Python interface for the Minkalla QynAuth quantum-resistant authentication framework."
-readme = "README.md"
-license = { text = "Apache-2.0" }
-requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Rust",
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-    "Intended Audience :: Developers",
-    "Topic :: Security :: Cryptography",
-]
+    # This specifies that all source code is rooted under the 'app' directory within 'src/python_app/'
+    packages = [
+        { include = "app", from = "src/python_app" }
+    ]
 
-[tool.maturin]
-features = ["pyo3/extension-module"]
+
+    [tool.poetry.dependencies]
+    python = "^3.10"
+    fastapi = "^0.111.0"
+    uvicorn = {extras = ["standard"], version = "^0.30.1"}
+    pydantic = "^2.7.4"
+
+    [tool.poetry.group.dev.dependencies]
+    pytest = "^8.2.2"
+    black = "^24.4.2"
+    flake8 = "^7.1.0"
+    isort = "^5.13.2"
+
+    [build-system]
+    requires = ["poetry-core"]
+    build-backend = "poetry.core.masonry.api"
+    
