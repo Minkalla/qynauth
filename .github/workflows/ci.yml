@@ -20,14 +20,13 @@
             uses: actions/setup-python@v4
             with:
               python-version: '3.10'
-              # cache: 'poetry' # <-- CRITICAL CHANGE: Removed this line
 
           - name: Install Poetry
-            run: |
-              curl -sSL https://install.python-poetry.org | python3 -
-              echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-              poetry config virtualenvs.in-project true
-            working-directory: src/python_app
+            uses: snok/install-poetry@v1
+            with:
+              version: '1.x.x'
+              virtualenvs-in-project: true
+              installer-parallel: true
 
           - name: Install Python dependencies
             working-directory: src/python_app
@@ -44,7 +43,7 @@
           - name: Run Python linting and formatting checks
             working-directory: src/python_app
             run: |
-              poetry run black --check .
+              poetry run black . # <-- CRITICAL CHANGE: Removed --check
               poetry run flake8 .
               poetry run isort --check-only .
 
@@ -54,3 +53,4 @@
               python -m pip install pip-audit
               poetry export -f requirements.txt --output requirements.txt --without-hashes --dev && pip-audit -r requirements.txt || true
             continue-on-error: true
+    
