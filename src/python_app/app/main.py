@@ -5,7 +5,7 @@ import datetime
 import uuid
 import jwt
 import subprocess
-# import os # Removed as it's unused (F401)
+import os
 
 app = FastAPI(
         title="QynAuth API - MVP",
@@ -113,14 +113,14 @@ async def login_for_access_token(request: LoginRequest):
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
+                detail=("Incorrect username or password"),  # Broken for E501
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
         if user["password_hash"] != f"MOCKED_HASH_{request.password}":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
+                detail=("Incorrect username or password"),  # Broken for E501
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
