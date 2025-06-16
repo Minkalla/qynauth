@@ -1,5 +1,3 @@
-    # src/python_app/quantum_bridge.py
-
     import ctypes
     import os
 
