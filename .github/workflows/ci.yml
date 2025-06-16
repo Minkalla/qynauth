@@ -17,21 +17,21 @@
             uses: actions/checkout@v4
 
           - name: Set up Python 3.10
-            uses: actions/setup-python@v4 # <-- CRITICAL CHANGE: Use v4
+            uses: actions/setup-python@v4
             with:
               python-version: '3.10'
-              cache: 'poetry' # Use Poetry cache with setup-python
+              # cache: 'poetry' # <-- CRITICAL CHANGE: Removed this line
 
           - name: Install Poetry
             run: |
-              curl -sSL https://install.python-poetry.org | python3 - # Install Poetry using its official script
-              echo "$HOME/.poetry/bin" >> $GITHUB_PATH # Add Poetry to PATH
-              poetry config virtualenvs.in-project true # Configure Poetry to create virtualenvs in .venv
-            working-directory: src/python_app # Run poetry config in the project context
+              curl -sSL https://install.python-poetry.org | python3 -
+              echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+              poetry config virtualenvs.in-project true
+            working-directory: src/python_app
 
           - name: Install Python dependencies
             working-directory: src/python_app
-            run: poetry install --no-root # Install project dependencies
+            run: poetry install --no-root
 
           - name: Build Rust project
             working-directory: src/rust_lib
