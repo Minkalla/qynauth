@@ -16,27 +16,33 @@ user_db: Dict[str, Dict[str, str]] = {}
 SECRET_KEY = "your-super-secret-key"
 ALGORITHM = "HS256"
 
+
 class RegisterRequest(BaseModel):
     username: str
     password: str
+
 
 class RegisterResponse(BaseModel):
     message: str
     user_id: str
     username: str
 
+
 class LoginRequest(BaseModel):
     username: str
     password: str
+
 
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user_id: str
 
+
 @app.get("/health", summary="Health check endpoint")
 async def health_check():
     return {"status": "ok", "service": "QynAuth MVP"}
+
 
 @app.post(
     "/auth/register",
@@ -69,6 +75,7 @@ async def register_user(request: RegisterRequest):
         "username": request.username,
     }
 
+
 @app.post(
     "/auth/login",
     response_model=LoginResponse,
@@ -99,4 +106,8 @@ async def login_for_access_token(request: LoginRequest):
 
     print(f"[VERIFIABLE LOG]: User {request.username} logged in, issued JWT")
 
-    return {"access_token": encoded_jwt, "token_type": "bearer", "user_id": user["user_id"]}
+    return {
+        "access_token": encoded_jwt,
+        "token_type": "bearer",
+        "user_id": user["user_id"],
+    }
