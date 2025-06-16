@@ -24,7 +24,7 @@
           - name: Install Poetry
             uses: snok/install-poetry@v1
             with:
-              version: '1.x.x'
+              version: '1.8.2' # <-- CRITICAL CHANGE: Specific Poetry version
               virtualenvs-in-project: true
               installer-parallel: true
 
@@ -43,7 +43,7 @@
           - name: Run Python linting and formatting checks
             working-directory: src/python_app
             run: |
-              poetry run black . # <-- CRITICAL CHANGE: Removed --check
+              poetry run black --check . # <-- Re-introducing --check
               poetry run flake8 .
               poetry run isort --check-only .
 
