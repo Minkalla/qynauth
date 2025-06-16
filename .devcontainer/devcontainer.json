@@ -1,0 +1,31 @@
+    {
+        "name": "QynAuth Development Environment",
+        "image": "mcr.microsoft.com/devcontainers/universal:2",
+        "features": {
+            "ghcr.io/devcontainers/features/python:1": {
+                "version": "3.10",
+                "installPoetry": "true"
+            },
+            "ghcr.io/devcontainers/features/rust:1": {
+                "version": "1.70.0"
+            },
+            "ghcr.io/devcontainers/features/node:1": {
+                "version": "20"
+            }
+        },
+        "customizations": {
+            "vscode": {
+                "extensions": [
+                    "ms-python.python",
+                    "ms-python.vscode-pylance",
+                    "esbenp.prettier-vscode",
+                    "dbaeumer.vscode-eslint",
+                    "rust-lang.rust-analyzer",
+                    "github.vscode-github-actions"
+                ]
+            }
+        },
+        "postCreateCommand": "cd src/python_app && poetry install --no-root && cd ../rust_lib && cargo build && cd ../python_app",
+        "remoteUser": "codespace"
+    }
+    
