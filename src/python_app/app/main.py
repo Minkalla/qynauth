@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Dict, List
 import datetime
 import uuid
+import jwt
 
 app = FastAPI(
     title="QynAuth API - MVP",
@@ -11,6 +12,9 @@ app = FastAPI(
 )
 
 user_db: Dict[str, Dict[str, str]] = {}
+
+SECRET_KEY = "your-super-secret-key"
+ALGORITHM = "HS256"
 
 class RegisterRequest(BaseModel):
     username: str
@@ -21,10 +25,18 @@ class RegisterResponse(BaseModel):
     user_id: str
     username: str
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user_id: str
+
 @app.get("/health", summary="Health check endpoint")
 async def health_check():
     return {"status": "ok", "service": "QynAuth MVP"}
-
 
 @app.post(
     "/auth/register",
@@ -39,7 +51,6 @@ async def register_user(request: RegisterRequest):
             detail="Username already registered",
         )
 
-    # For MVP, we'll store a mock hash or the plain password (NOT for production!)
     hashed_password = f"MOCKED_HASH_{request.password}"
 
     user_id = str(uuid.uuid4())
@@ -57,3 +68,35 @@ async def register_user(request: RegisterRequest):
         "user_id": user_id,
         "username": request.username,
     }
+
+@app.post(
+    "/auth/login",
+    response_model=LoginResponse,
+    summary="Authenticate user and return JWT",
+)
+async def login_for_access_token(request: LoginRequest):
+    user = user_db.get(request.username)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if user["password_hash"] != f"MOCKED_HASH_{request.password}":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    access_token_expires = datetime.timedelta(minutes=30)
+    to_encode = {"sub": user["user_id"]}
+    expire = datetime.datetime.utcnow() + access_token_expires
+    to_encode.update({"exp": expire})
+
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+    print(f"[VERIFIABLE LOG]: User {request.username} logged in, issued JWT")
+
+    return {"access_token": encoded_jwt, "token_type": "bearer", "user_id": user["user_id"]}
