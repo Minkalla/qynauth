@@ -54,4 +54,3 @@
               python -m pip install pip-audit
               poetry export -f requirements.txt --output requirements.txt --without-hashes --dev && pip-audit -r requirements.txt || true
             continue-on-error: true
-    
