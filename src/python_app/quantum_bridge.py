@@ -47,4 +47,3 @@
                 print(f"Response from Rust: {response}")
             except RuntimeError as e:
                 print(f"Error during Rust call: {e}")
-        
