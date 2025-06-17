@@ -1,31 +1,38 @@
-    {
-        "name": "QynAuth Development Environment",
-        "image": "mcr.microsoft.com/devcontainers/universal:2",
-        "features": {
-            "ghcr.io/devcontainers/features/python:1": {
-                "version": "3.10",
-                "installPoetry": "false" // Set to false, as we'll install it manually in postCreateCommand for robustness
-            },
-            "ghcr.io/devcontainers/features/rust:1": {
-                "version": "1.70.0"
-            },
-            "ghcr.io/devcontainers/features/node:1": {
-                "version": "20"
-            }
-        },
-        "customizations": {
-            "vscode": {
-                "extensions": [
-                    "ms-python.python",
-                    "ms-python.vscode-pylance",
-                    "esbenp.prettier-vscode",
-                    "dbaeumer.vscode-eslint",
-                    "rust-lang.rust-analyzer",
-                    "github.vscode-github-actions"
-                ]
-            }
-        },
-        // --- MODIFIED postCreateCommand for robust Poetry installation ---
-        "postCreateCommand": "python3 -m pip install --user pipx && python3 -m pipx ensurepath && pipx install poetry && cd src/python_app && poetry install --no-root && cd ../rust_lib && cargo build && cd ../python_app",
-        "remoteUser": "codespace"
+{
+  "name": "QynAuth Development Environment",
+  // Changed base image to a Python-focused one, which is usually smaller.
+  "image": "mcr.microsoft.com/devcontainers/python:3.10",
+  "features": {
+    // Rust feature is necessary for QynAuth's hybrid setup
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "1.70.0"
     }
+    // Removed Node.js feature, as it's unlikely needed for QynAuth core.
+    // Python feature implicitly covered by base image.
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "rust-lang.rust-analyzer",
+        "github.vscode-github-actions"
+        // Removed Prettier and ESLint (primarily for JS/TS)
+      ]
+    }
+  },
+  // MODIFIED: Simplified postCreateCommand to only install poetry.
+  // Rust build and Python project install will be manual steps after launch.
+  "postCreateCommand": "python3 -m pip install --user pipx && python3 -m pipx ensurepath && pipx install poetry",
+  // REMOVED: "remoteUser": "codespace", to resolve user creation errors
+
+  "portsAttributes": {
+    "3001": {
+      "label": "QynAuth API",
+      "onAutoForward": "openBrowser",
+      "onForward": "openBrowser",
+      "urlFormat": "http://localhost:3001/docs"
+    }
+  },
+  "forwardPorts": [3001]
+}
