@@ -21,10 +21,9 @@
       ]
     }
   },
-  // MODIFIED: Simplified postCreateCommand to only install poetry.
-  // Rust build and Python project install will be manual steps after launch.
-  "postCreateCommand": "python3 -m pip install --user pipx && python3 -m pipx ensurepath && pipx install poetry",
-  // REMOVED: "remoteUser": "codespace", to resolve user creation errors (if that was an issue after universal image)
+  // FINAL OPTIMIZATION: Automate all project-specific installations
+  // This command will run after the container is created and before VS Code connects.
+  "postCreateCommand": "python3 -m pip install --user pipx && python3 -m pipx ensurepath && pipx install poetry && cd src/python_app && poetry install --no-root && cd ../rust_lib && cargo build",
 
   "portsAttributes": {
     "3001": {
