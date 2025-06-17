@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from app.main import app, user_db
+from app.main import app, users_db
 
 client = TestClient(app)
 
