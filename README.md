@@ -1,6 +1,6 @@
 # Minkalla QynAuth
 
-Quantum-Resistant Authentication Microservice (Python FastAPI / Rust)
+Quantum-Safe Authentication Microservice (Python FastAPI / Rust)
 
 ## Project Status
 
@@ -10,52 +10,68 @@ This project is currently under active development as part of the Minkalla MVP.
 
 ## Overview
 
-QynAuth is a foundational component of the Minkalla ecosystem, focused on providing future-proof authentication and identity management. This MVP version implements secure classical authentication methods and includes a placeholder for advanced quantum-resistant cryptography, demonstrating readiness for post-quantum security challenges.
+QynAuth is a foundational component of the Minkalla ecosystem, providing a secure authentication layer with a placeholder for future quantum-safe cryptographic capabilities. This MVP focuses on delivering robust classical authentication and demonstrating the Rust/Python hybrid architecture.
 
 ## Features (MVP)
 
-* **User Registration:** `POST /auth/register` to securely register new user accounts (in-memory storage for MVP).
-* **User Login & JWT Generation:** `POST /auth/login` to authenticate users and issue JSON Web Tokens (JWT) for API access.
+* **User Registration API:** `POST /auth/register` for new user sign-up.
+* **User Login API:** `POST /auth/login` for user authentication, returning a simple JWT-like token.
+* **Quantum-Safe Crypto Placeholder:** Defines an interface for future integration of quantum-safe algorithms, demonstrated via a Rust component interaction.
+* **Rust/Python Hybrid Architecture:** Showcases interoperability between Python (FastAPI) and Rust (for performance-critical or cryptographic operations).
 * **Health Check:** `GET /health` to verify service operational status.
-* **Quantum-Safe Placeholder:** Integration with a Rust library for future quantum-resistant cryptographic operations, showing the modular architecture.
-* **API Documentation:** Built-in Swagger UI for easy API exploration.
-* **Unit Tested:** Core API endpoints are covered by comprehensive unit tests.
+* **API Documentation:** Built-in Swagger UI for easy API exploration, automatically redirecting from the root URL.
+* **Unit Tested:** Core API endpoints and authentication logic are covered by comprehensive unit tests.
 
 ## Getting Started
 
 ### Prerequisites
 
 * Python 3.10+ and Poetry installed.
-* Rust toolchain (rustup, cargo) installed.
-* (Optional but Recommended for Development): GitHub Codespaces for a pre-configured cloud development environment. A `.devcontainer` configuration is included for easy setup.
+* Rust and Cargo installed.
+* **Recommended for Development:** GitHub Codespaces for a consistent, pre-configured cloud development environment. A `.devcontainer` configuration is included for seamless setup.
 
 ### Local Development Setup (Using Codespaces)
 
-If you are using GitHub Codespaces, the environment (Python, Poetry, Rust) will be automatically set up for you based on the `.devcontainer` configuration. The `postCreateCommand` will automatically install Python dependencies (`poetry install`) and build the Rust library (`cargo build`).
+This project is highly optimized for development within **GitHub Codespaces**. Your Codespace environment, including Python, Poetry, Rust, and all project-specific dependencies, will be **automatically set up for you upon creation**.
+
+**Recommended Codespace Machine Type:**
+Due to the multi-language environment and automated build processes, we highly recommend using a **4-core (or higher)** Codespace machine type (e.g., "4-core, 16GB RAM + 32GB Storage") when creating your Codespace to ensure smooth and complete environment provisioning.
 
 1.  **Launch Codespace:**
     Go to your [QynAuth GitHub repository](https://github.com/minkalla/qynauth), click the green `< > Code` button, select the `Codespaces` tab, and launch your Codespace.
+    **All Python dependencies and the Rust project will be built automatically** as part of the Codespace creation.
+
 2.  **Verify Setup (Optional):**
-    Once the Codespace loads, you can verify installations in the terminal:
+    Once the Codespace loads and the terminal is active, you can verify installations:
 
     ```bash
     python3 --version
     poetry --version
     cargo --version
     ```
-
     You should see their respective versions.
-3.  **Run the FastAPI Application:**
-    Navigate to the Python application directory and start the server:
 
+### Running the QynAuth API Locally
+
+Once your development environment is ready (i.e., Codespace has finished loading), you can start the FastAPI application:
+
+1.  **Navigate to the application directory:**
     ```bash
     cd src/python_app
-    poetry run uvicorn app.main:app --reload --port 3001
     ```
 
+2.  **Start the Uvicorn Server:**
+    From the `src/python_app` directory, run:
+    ```bash
+    PYTHONPATH=. poetry run uvicorn app.main:app --reload --port 3001
+    ```
     You should see output indicating the server is running on `http://127.0.0.1:3001`.
-4.  **Access API Documentation:**
-    Open your web browser and navigate to `http://localhost:3001/docs` (or the Codespaces forwarded URL ending in `/docs`). You will see the interactive Swagger UI.
+
+3.  **Access API Documentation:**
+    Open your web browser (via Codespaces Port Forwarding) and navigate to:
+    `http://localhost:3001/`
+
+    The API will automatically redirect you to the interactive Swagger UI at `http://localhost:3001/docs`.
 
 ### API Endpoints
 
@@ -63,57 +79,45 @@ All API endpoints are documented in the Swagger UI. Here's a quick overview:
 
 #### `POST /auth/register`
 
-Registers a new user with a unique username and password.
+Registers a new user with a username and password.
 
 * **Method:** `POST`
 * **URL:** `/auth/register`
 * **Request Body (JSON):**
-
     ```json
     {
       "username": "string",
       "password": "string"
     }
     ```
-
-* **Example Request (using `curl`):**
-
-    ```bash
-    curl -X POST http://localhost:3001/auth/register \
-    -H "Content-Type: application/json" \
-    -d '{
-      "username": "mytestuser",
-      "password": "MySuperStrongPassword123"
-    }'
+* **Response (JSON):**
+    ```json
+    {
+      "access_token": "string",
+      "token_type": "bearer"
+    }
     ```
 
 #### `POST /auth/login`
 
-Authenticates a user and returns a JSON Web Token (JWT).
+Authenticates a user and returns an access token.
 
 * **Method:** `POST`
 * **URL:** `/auth/login`
 * **Request Body (JSON):**
-
     ```json
     {
       "username": "string",
       "password": "string"
     }
     ```
-
-* **Example Request (using `curl`):**
-
-    ```bash
-    curl -X POST http://localhost:3001/auth/login \
-    -H "Content-Type: application/json" \
-    -d '{
-      "username": "mytestuser",
-      "password": "MySuperStrongPassword123"
-    }'
+* **Response (JSON):**
+    ```json
+    {
+      "access_token": "string",
+      "token_type": "bearer"
+    }
     ```
-
-    *The response will contain an `access_token` that you can use in `Authorization: Bearer <token>` headers for protected endpoints (future feature).*
 
 #### `GET /health`
 
@@ -121,20 +125,35 @@ Checks the health of the service.
 
 * **Method:** `GET`
 * **URL:** `/health`
-* **Example Request (using `curl`):**
 
+### Running Tests
+
+To execute the unit tests for QynAuth:
+
+1.  **Navigate to the application directory:**
     ```bash
-    curl http://localhost:3001/health
+    cd src/python_app
     ```
 
-## AuthToken Specification
+2.  **Run Pytest:**
+    From the `src/python_app` directory, run:
+    ```bash
+    PYTHONPATH=. poetry run pytest
+    ```
+    All tests should pass, and you will see a summary of the test results.
 
-For details on the JWT token structure and claims, refer to the [AuthToken Specification](docs/AUTH_TOKEN_SPEC.md).
+## Contribution
 
-## Running Tests
+We welcome contributions! Please see our central [CONTRIBUTING.md](../.github/CONTRIBUTING.md) guidelines to get started.
 
-To run the unit tests for QynAuth:
+## License
 
-```bash
-cd src/python_app
-poetry run pytest
+This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
+
+## Security
+
+For information on reporting security vulnerabilities, please refer to our [SECURITY.md](SECURITY.md) policy.
+
+---
+
+Part of the [Minkalla](https://github.com/minkalla) open-source ecosystem.
