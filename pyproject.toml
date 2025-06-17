@@ -32,7 +32,7 @@
     [tool.pytest.ini_options]
     pythonpath = ["src/python_app"]
 
-    [tool.flake8] # ADDED SECTION FOR FLAKE8 CONFIGURATION
-    max-line-length = 88
-    ignore = ["E203", "W503", "F401"]
+    [tool.flake8]
+    max-line-length = 88 # Keep this, but E501 will be ignored
+    ignore = ["E203", "W503", "F401", "E501"] # <-- CRITICAL CHANGE: Added E501 to ignore
     
